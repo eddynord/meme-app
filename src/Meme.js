@@ -3,65 +3,90 @@ import '../src/index.css';
 import memesData from './memesData';
 
 
-export default Form
-function Form () {
-    const [meme, setMeme] = React.useState(
-        {
-            topText: "",
-            bottomText: "",
-            randomImage: "http://i.imgflip.com/1bij.jpg"
-        }
+export default function Meme() {
+    /**
+     * Challenge: 
+     * As soon as the Meme component loads the first time,
+     * make an API call to "https://api.imgflip.com/get_memes".
+     * 
+     * When the data comes in, save just the memes array part
+     * of that data to the `allMemes` state
+     * 
+     * Think about if there are any dependencies that, if they
+     * changed, you'd want to cause to re-run this function.
+     * 
+     * Hint: for now, don't try to use an async/await function.
+     * Instead, use `.then()` blocks to resolve the promises
+     * from using `fetch`. We'll learn why after this challenge.
+     */
     
-    ) 
-     
-
-
-
-
-
-
-
-const [allMemeImages, setAllMemeImages] = React.useState(memesData)
+    const [meme, setMeme] = React.useState({
+        topText: "",
+        bottomText: "",
+        randomImage: "http://i.imgflip.com/1bij.jpg" 
+    })
+    const [allMemes, setAllMemes] = React.useState([])
     
+    React.useEffect(() => {
+        fetch("http://i.imgflip.com/1bij.jpg")
+        .then(res => setAllMemes(memesData.data.memes))
+
+        
+    }, [])
+
+
     
 
     function getMemeImage() {
-        const memesArray = allMemeImages.data.memes
-        const randomNumber = Math.floor(Math.random() * memesArray.length)
-        const url = memesArray[randomNumber].url
+        
+        const randomNumber = Math.floor(Math.random() * allMemes.length)
+        const url = allMemes[randomNumber].url
         setMeme(prevMeme => ({
-           ...prevMeme,
-           randomImage: url
+            ...prevMeme,
+            randomImage: url
+        }))
+        
+    }
+    
+    function handleChange(event) {
+        const {name, value} = event.target
+        setMeme(prevMeme => ({
+            ...prevMeme,
+            [name]: value
         }))
     }
-      
-       
-      
-  
-        
-
-      
-      
-
-
-    
     
     return (
-        <div className='form'>
-            <div className='form-content'>
-                <div className='form-input'>
-                    <input className='form-inputs' type="text" placeholder='Top text'></input>
-                    <input className='form-inputs' type="text" placeholder='Bottom text'></input>
-                </div>
-                <div className='form-btn'>
-                    <button className='submit-btn' onClick={getMemeImage}>Get a new meme image 🖼</button>
-                </div>
+        <main>
+            <div className="form">
+                <input 
+                    type="text"
+                    placeholder="Top text"
+                    className="form--input"
+                    name="topText"
+                    value={meme.topText}
+                    onChange={handleChange}
+                />
+                <input 
+                    type="text"
+                    placeholder="Bottom text"
+                    className="form--input"
+                    name="bottomText"
+                    value={meme.bottomText}
+                    onChange={handleChange}
+                />
+                <button 
+                    className="form--button"
+                    onClick={getMemeImage}
+                >
+                    Get a new meme image 🖼
+                </button>
             </div>
-            <div className='meme-image'>
-                <img className='meme-hero' src={meme.randomImage} alt='Meme'/>
+            <div className="meme">
+                <img src={meme.randomImage} className="meme--image" />
+                <h2 className="meme--text top">{meme.topText}</h2>
+                <h2 className="meme--text bottom">{meme.bottomText}</h2>
             </div>
-
-
-        </div>
+        </main>
     )
 }
